@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = "CTTrangDuyet";
+    Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
+}
+@model BPVN_QL_XE_KTX_PH.Areas.XE.Controllers.XeController.DonViewModel
+
+
+<body style="margin:0; font-family:Segoe UI, sans-serif;
+             background:linear-gradient(135deg,#c3e0ff,#1e3c72);
+             display:flex; justify-content:center; align-items:center; min-height:100vh;">
+
+    <!-- Tờ A4 ngang -->
+    <div style="width:1000px; max-width:95%; aspect-ratio:1.414; /* A4 landscape */
+                background:#fff; border-radius:15px; box-shadow:0 12px 30px rgba(0,0,0,0.35);
+                padding:40px; display:flex; flex-direction:column; margin:auto;">
+
+        <!-- Tiêu đề -->
+        <h2 style="text-align:center;color:#1e3c72;margin-bottom:30px; font-size:1.8rem;">📄 @Model.TieuDe</h2>
+
+        <!-- Thông tin chi tiết -->
+        <div style="display:flex; flex-wrap:wrap; gap:15px; color:#1e3c72; font-size:1rem; justify-content:space-between; margin-bottom:25px;">
+            <span><strong>Người tạo:</strong> @Model.TenNguoiTao</span>
+            <span><strong>Bộ phận:</strong> @Model.BoPhanDangKy</span>
+            <span><strong>Mục Đích:</strong> @Model.MucDich</span>
+            <span><strong>Mã đơn:</strong> @Model.MaDon</span>
+            <span><strong>Cổng:</strong> @Model.CongVao</span>
+            <span><strong>Thời gian tạo:</strong> @(Model.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</span>
+            <span><strong>Giờ vào dự kiến:</strong> @(Model.GioVaoDuKien?.ToString("dd/MM/yyyy HH:mm") ?? "-")</span>
+            <span><strong>Thời gian vào:</strong> @(Model.ThoiGianVao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</span>
+            <span><strong>Thời gian ra:</strong> @(Model.ThoiGianRa?.ToString("dd/MM/yyyy HH:mm") ?? "-")</span>
+            <span>
+                <strong>Trạng thái:</strong>
+                <span style="padding:0.4rem 0.8rem; border-radius:5px; font-weight:bold;
+                             background-color:@(Model.TrangThai == "Đang chờ xét duyệt" ? "#ffc107" : "#198754");
+                             color:@(Model.TrangThai == "Đang chờ xét duyệt" ? "#212529" : "#fff");">
+                    @Model.TrangThai
+                </span>
+                &nbsp; | &nbsp;
+                <strong>Người duyệt:</strong> @(string.IsNullOrEmpty(Model.TenNguoiDuyet) ? "-" : Model.TenNguoiDuyet)
+            </span>
+        </div>
+
+        <!-- Ảnh minh họa -->
+        <div style="flex:1; display:flex; justify-content:center; align-items:center;
+                    background:#000; padding:10px; border-radius:12px; overflow:hidden; margin-bottom:20px;">
+            @if (Model.Anh != null && Model.Anh.Length > 0)
+            {
+                var base64 = Convert.ToBase64String(Model.Anh);
+                <img src="data:image/png;base64,@base64"
+                     style="width:100%; max-height:100%; border-radius:12px; object-fit:contain; filter:brightness(0.85); cursor:pointer; transition:transform 0.3s ease;"
+                     onclick="showFullImage(this.src)" />
+            }
+            else
+            {
+                <span style="color:#6c757d;">Chưa có ảnh</span>
+            }
+        </div>
+    </div>
+
+    <!-- Modal xem ảnh toàn màn hình -->
+    <div id="imageModal"
+         style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
+                background:rgba(0,0,0,0.95); justify-content:center; align-items:center;
+                z-index:9999; cursor:zoom-out; transition:opacity 0.3s ease;">
+        <img id="fullImage" src=""
+             style="max-width:95%; max-height:95%; border-radius:12px; box-shadow:0 0 40px rgba(255,255,255,0.2); transform:scale(0.95); opacity:0; transition:all 0.3s ease;" />
+    </div>
+
+    <script>
+        const modal = document.getElementById('imageModal');
+        const fullImage = document.getElementById('fullImage');
+
+        function showFullImage(src) {
+            fullImage.src = src;
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                fullImage.style.transform = 'scale(1)';
+                fullImage.style.opacity = '1';
+            }, 10);
+        }
+
+        // Đóng modal khi click ra ngoài ảnh
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                fullImage.style.transform = 'scale(0.95)';
+                fullImage.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        });
+    </script>
+</body>

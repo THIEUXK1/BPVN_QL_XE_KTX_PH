@@ -1,0 +1,357 @@
+﻿@{
+	ViewData["Title"] = "Tạo đơn đăng ký";
+	Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
+}
+
+@model BPVN_QL_XE_KTX_PH.Areas.XE.Models.DonRaVao
+
+@{
+	var userId = Context.Session.GetInt32("UserId");
+	var userName = Context.Session.GetString("UserName");
+}
+
+<div class="container-form" style="display:flex; justify-content:center; padding:50px 0; background:#f4f6f8;">
+	<div style="width:794px; min-height:1123px; background:#fff; border-radius:12px; border:1px solid #ddd; box-shadow:0 12px 30px rgba(0,0,0,0.15); padding:40px; font-family:Segoe UI,sans-serif;">
+		<h2 style="text-align:center; color:#1e3c72; margin-bottom:30px;">📝 TẠO ĐƠN ĐĂNG KÝ</h2>
+
+		<div id="alertSuccess" style="display:none; text-align:center; padding:15px; border-radius:8px; background:#d4edda; color:#155724; margin-bottom:25px;"></div>
+
+		<form id="donForm" enctype="multipart/form-data">
+			@Html.AntiForgeryToken()
+
+			<!-- Chọn loại đơn -->
+			<div style="margin-bottom:25px;">
+				<label for="loaiDonSelect" style="font-weight:bold; color:#1e3c72; display:block; margin-bottom:5px;">Chọn loại đơn</label>
+				<select id="loaiDonSelect" name="IdLoaiDon" style="width:100%; padding:10px; font-size:1rem; border-radius:8px; border:1px solid #ccc;">
+					<option value="">-- Chọn loại đơn --</option>
+					@foreach (var item in ViewBag.LoaiDonList)
+					{
+						<option value="@item.IdLoaiDon" data-ten="@item.TenLoaiDon">@item.TenLoaiDon</option>
+					}
+				</select>
+			</div>
+
+			<!-- Nội dung form -->
+			<div id="formNoiDung" style="display:none;">
+				<hr style="border:none; border-top:1px solid #ccc; margin:25px 0;" />
+				<div style="text-align:center; margin-bottom:25px;">
+					<h4 style="font-weight:bold; color:#1e3c72; margin-bottom:5px;">MẪU ĐƠN ĐĂNG KÝ</h4>
+					<p style="color:#6c757d; margin:0;">Vui lòng điền đầy đủ thông tin bên dưới</p>
+				</div>
+
+				<!-- Tiêu đề -->
+				<div style="margin-bottom:20px;">
+					<label style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Tiêu đề</label>
+					<input id="TieuDeInput" name="TieuDe" type="text" placeholder="Nhập tiêu đề đơn..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
+				</div>
+
+				<!-- Bộ phận đăng ký -->
+				<div style="margin-bottom:20px;">
+					<label for="BoPhanSelect" style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Bộ phận đăng ký</label>
+					<select id="BoPhanSelect" name="BoPhanDangKy" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;">
+						<option value="">-- Chọn Bộ phận --</option>
+						<option value="BPVN">BPVN</option>
+						<option value="AC">AC</option>
+						<option value="AL">AL</option>
+						<option value="BD">BD</option>
+						<option value="CD">CD</option>
+						<option value="C-DH">C-DH</option>
+						<option value="CV">CV</option>
+						<option value="DCC">DCC</option>
+						<option value="DF">DF</option>
+						<option value="DH">DH</option>
+						<option value="EG">EG</option>
+						<option value="GM">GM</option>
+						<option value="HR">HR</option>
+						<option value="IE">IE</option>
+						<option value="IT">IT</option>
+						<option value="LD">LD</option>
+						<option value="LP">LP</option>
+						<option value="LTB">LTB</option>
+						<option value="NANO">NANO</option>
+						<option value="PD">PD</option>
+						<option value="PMC">PMC</option>
+						<option value="PT">PT</option>
+						<option value="PUR">PUR</option>
+						<option value="PW">PW</option>
+						<option value="QA">QA</option>
+						<option value="QC">QC</option>
+						<option value="QC-F">QC-F</option>
+						<option value="QC-R">QC-R</option>
+						<option value="RD">RD</option>
+						<option value="SD">SD</option>
+						<option value="SHD">SHD</option>
+						<option value="SL">SL</option>
+						<option value="SS">SS</option>
+						<option value="TD">TD</option>
+						<option value="TRANING">TRANING</option>
+						<option value="WA">WA</option>
+						<option value="WD">WD</option>
+						<option value="WH">WH</option>
+						<option value="WK">WK</option>
+						<option value="WL">WL</option>
+						<option value="WS">WS</option>
+						<option value="WV">WV</option>
+						<option value="YDF">YDF</option>
+						<option value="TBV">TBV</option>
+						<option value="SV">SV</option>
+						<option value="DC">DC</option>
+						<option value="TR">TR</option>
+						<option value="TMC">TMC</option>
+						<option value="TL">TL</option>
+						<option value="MD">MD</option>
+						<option value="SR">SR</option>
+						<option value="TWS">TWS</option>
+						<option value="Tech">Tech</option>
+						<option value="LTB2">LTB2</option>
+						<option value="RD2">RD2</option>
+						<option value="Mega">Mega</option>
+					</select>
+				</div>
+
+				<!-- Mục đích -->
+				<div style="margin-bottom:20px;">
+					<label style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Mục đích</label>
+					<input id="MucDichInput" name="MucDich" type="text" placeholder="Nhập mục đích của đơn..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
+				</div>
+
+				<!-- Cổng vào -->
+				<div style="margin-bottom:20px;">
+					<label for="CongVaoSelect" style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Cổng vào</label>
+					<select id="CongVaoSelect" name="CongVao" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;">
+						<option value="">-- Chọn Cổng vào --</option>
+						<option value="Cổng 1">Cổng 1</option>
+						<option value="Cổng 2">Cổng 2</option>
+						<option value="Cổng 3">Cổng 3</option>
+						<option value="Cổng 4">Cổng 4</option>
+						<option value="Cổng 5">Cổng 5</option>
+					</select>
+				</div>
+
+				<!-- Giờ vào dự kiến & Thời gian ra -->
+				<div style="display:flex; gap:15px; margin-bottom:20px;">
+					<div style="flex:1; display:flex; flex-direction:column;">
+						<label for="GioVaoDuKienInput" style="font-weight:600; color:#1e3c72; margin-bottom:5px;">Giờ vào dự kiến</label>
+						<input id="GioVaoDuKienInput" name="GioVaoDuKien" type="datetime-local" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
+					</div>
+					<div style="flex:1; display:flex; flex-direction:column;">
+						<label for="ThoiGianRaInput" style="font-weight:600; color:#1e3c72; margin-bottom:5px;">Thời gian ra</label>
+						<input id="ThoiGianRaInput" name="ThoiGianRa" type="datetime-local" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
+					</div>
+				</div>
+
+				<!-- Ảnh minh họa -->
+				<div style="margin-bottom:20px;">
+					<input type="checkbox" id="toggleAnhCheck" style="margin-right:10px;" />
+					<label for="toggleAnhCheck" style="font-weight:600; color:#1e3c72;">Dùng ảnh minh họa</label>
+				</div>
+				<div id="anhSection" style="display:none; margin-bottom:25px;">
+					<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+						<label style="font-weight:600; color:#1e3c72; margin:0;">Ảnh minh họa</label>
+						<button type="button" id="removeImageBtn" style="display:none; padding:5px 10px; font-size:0.85rem; border-radius:6px; border:1px solid #007bff; color:#007bff; background:#fff; cursor:pointer;">🗑 Gỡ ảnh</button>
+					</div>
+					<div id="uploadZone" style="position:relative; border:2px dashed #007bff; border-radius:10px; padding:30px; text-align:center; background:#f8f9fa; cursor:pointer;">
+						<p style="margin:0; color:#6c757d;">📤 Kéo & thả, dán (Ctrl+V) hoặc click để chọn ảnh</p>
+						<input type="file" id="AnhInput" name="AnhFile" accept="image/*" hidden />
+						<div id="previewContainer" style="display:none; margin-top:15px; text-align:center;">
+							<img id="previewImage" src="#" alt="Preview" style="max-height:400px; border-radius:8px; border:1px solid #ccc;" />
+						</div>
+					</div>
+				</div>
+
+				<!-- Word/Excel file -->
+				<div style="margin-bottom:25px;">
+					<label for="WordInput" style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Tải file Word/Excel</label>
+					<input type="file" id="WordInput" name="WordFile" accept=".doc,.docx,.xls,.xlsx" />
+				</div>
+
+				<!-- Người tạo -->
+				<input type="hidden" name="IdNguoiTao" value="@userId" />
+				<div style="margin-bottom:20px;">
+					<label style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Người tạo</label>
+					<input type="text" value="@userName" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; background:#e9ecef; font-size:1rem;" />
+				</div>
+
+				<!-- Cam kết -->
+				<div style="margin-bottom:30px;">
+					<input type="checkbox" id="xacNhanCheck" style="margin-right:10px;" />
+					<label for="xacNhanCheck" style="color:#6c757d; font-weight:600;">Tôi cam kết thông tin trên là đúng sự thật và chịu trách nhiệm hoàn toàn.</label>
+				</div>
+
+				<!-- Button Lưu -->
+				<div style="text-align:center;">
+					<button type="button" id="btnLuu" disabled style="opacity:0.6; cursor:not-allowed; padding:12px 40px; font-size:1.1rem; font-weight:bold; border-radius:10px; background:#1e3c72; color:#fff; border:none;">💾 Lưu đơn</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			const selectLoaiDon = document.getElementById("loaiDonSelect");
+			const form = document.getElementById("formNoiDung");
+			const tieuDe = document.getElementById("TieuDeInput");
+			const selectBoPhan = document.getElementById("BoPhanSelect");
+			const selectCongVao = document.getElementById("CongVaoSelect");
+			const inputMucDich = document.getElementById("MucDichInput");
+			const inputGioVaoDuKien = document.getElementById("GioVaoDuKienInput");
+			const inputThoiGianRa = document.getElementById("ThoiGianRaInput");
+			const toggleAnhCheck = document.getElementById("toggleAnhCheck");
+			const anhSection = document.getElementById("anhSection");
+			const uploadZone = document.getElementById("uploadZone");
+			const fileInput = document.getElementById("AnhInput");
+			const previewContainer = document.getElementById("previewContainer");
+			const previewImage = document.getElementById("previewImage");
+			const removeImageBtn = document.getElementById("removeImageBtn");
+			const wordInput = document.getElementById("WordInput"); // file Word/Excel
+			const check = document.getElementById("xacNhanCheck");
+			const btnLuu = document.getElementById("btnLuu");
+			const alertSuccess = document.getElementById("alertSuccess");
+			const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+			const formInputs = [selectLoaiDon, selectBoPhan, selectCongVao, tieuDe, inputMucDich, inputGioVaoDuKien, inputThoiGianRa];
+
+			// --- Lưu/Load trạng thái form ---
+			function saveFormState() {
+				try {
+					const state = {};
+					formInputs.forEach(i => { if(i.id) state[i.id] = i.value; });
+					state.isAnhChecked = toggleAnhCheck.checked;
+					localStorage.setItem('donRaVaoFormState', JSON.stringify(state));
+				} catch(e){ console.error(e); }
+			}
+
+			function loadFormState() {
+				try {
+					const state = JSON.parse(localStorage.getItem('donRaVaoFormState') || '{}');
+					formInputs.forEach(i => { if(i.id && state[i.id] !== undefined) i.value = state[i.id]; });
+					toggleAnhCheck.checked = state.isAnhChecked || false;
+					anhSection.style.display = toggleAnhCheck.checked ? "block" : "none";
+					if(selectLoaiDon.value) form.style.display="block";
+				} catch(e){ localStorage.removeItem('donRaVaoFormState'); }
+			}
+
+			loadFormState();
+			formInputs.forEach(i => {
+				i.addEventListener('change', saveFormState);
+				if(i.type==='text'||i.type==='datetime-local') i.addEventListener('input', saveFormState);
+			});
+
+			// --- Hiển thị form khi chọn loại đơn ---
+			selectLoaiDon.addEventListener('change', () => {
+				form.style.display = selectLoaiDon.value ? "block" : "none";
+				if(!tieuDe.value || tieuDe.value.startsWith("Đơn ")) {
+					const tenLoai = selectLoaiDon.options[selectLoaiDon.selectedIndex].getAttribute('data-ten');
+					tieuDe.value = "Đơn " + tenLoai;
+				}
+				saveFormState();
+			});
+
+			// --- Toggle ảnh minh họa ---
+			toggleAnhCheck.addEventListener('change', () => {
+				anhSection.style.display = toggleAnhCheck.checked ? "block" : "none";
+				if(!toggleAnhCheck.checked) resetImage();
+				saveFormState();
+			});
+
+			// --- Click chọn file ---
+			uploadZone.addEventListener('click', () => fileInput.click());
+			fileInput.addEventListener('change', handleFile);
+
+			function handleFile() { if(this.files[0]) showPreview(this.files[0]); }
+
+			// --- Preview ảnh ---
+			function showPreview(file) {
+				if(file.size > 5*1024*1024){ alert("Ảnh quá lớn <=5MB"); return; }
+				const img = new Image();
+				const reader = new FileReader();
+				reader.onload = e => {
+					img.src = e.target.result;
+					img.onload = () => {
+						if(img.width<300 || img.height<300){ alert("Ảnh quá nhỏ, tối thiểu 300x300px"); return; }
+						previewImage.src = img.src;
+						previewContainer.style.display = "block";
+						removeImageBtn.style.display = "inline-block";
+						const dt = new DataTransfer();
+						dt.items.add(file);
+						fileInput.files = dt.files;
+					};
+				};
+				reader.readAsDataURL(file);
+			}
+
+			// --- Xóa ảnh ---
+			removeImageBtn.addEventListener('click', resetImage);
+			function resetImage() {
+				previewContainer.style.display = "none";
+				removeImageBtn.style.display = "none";
+				previewImage.src = "#";
+				fileInput.value = "";
+				if(fileInput.files) fileInput.files = new DataTransfer().files;
+			}
+
+			// --- Ctrl+V dán ảnh ---
+			document.addEventListener('paste', function(e){
+				if(!toggleAnhCheck.checked) return;
+				const items = e.clipboardData.items;
+				for(let i=0; i<items.length; i++){
+					if(items[i].type.indexOf('image')!==-1){
+						const file = items[i].getAsFile();
+						if(file) showPreview(file);
+					}
+				}
+			});
+
+			// --- Bật button lưu khi check ---
+			check.addEventListener('change', ()=>{
+				btnLuu.disabled = !check.checked;
+				btnLuu.style.opacity = check.checked ? "1" : "0.6";
+				btnLuu.style.cursor = check.checked ? "pointer" : "not-allowed";
+			});
+
+			// --- Submit form ---
+		btnLuu.addEventListener('click', ()=>{
+			// Kiểm tra bắt buộc ảnh
+			if(toggleAnhCheck.checked && fileInput.files.length === 0){
+				alert("Vui lòng thêm ảnh minh họa trước khi lưu.");
+				return;
+			}
+
+			const formData = new FormData();
+			formData.append("__RequestVerificationToken", token);
+			formData.append("IdLoaiDon", selectLoaiDon.value);
+			formData.append("TieuDe", tieuDe.value);
+			formData.append("BoPhanDangKy", selectBoPhan.value);
+			formData.append("MucDich", inputMucDich.value);
+			formData.append("CongVao", selectCongVao.value);
+			formData.append("IdNguoiTao", "@userId");
+			formData.append("GioVaoDuKien", inputGioVaoDuKien.value);
+			formData.append("ThoiGianRa", inputThoiGianRa.value);
+
+			if(fileInput.files.length>0) formData.append("AnhFile", fileInput.files[0]); // bắt buộc nếu toggleAnhCheck.checked
+			if(wordInput.files.length>0) formData.append("WordFile", wordInput.files[0]); // tùy chọn
+
+			fetch("/DonXetDuyet/addTrangTao", { method: "POST", body: formData })
+				.then(resp => resp.ok ? resp.text() : Promise.reject("Lỗi gửi dữ liệu"))
+				.then(msg => {
+					alertSuccess.textContent = msg;
+					alertSuccess.style.display = "block";
+					localStorage.removeItem('donRaVaoFormState');
+					document.getElementById("donForm").reset();
+					resetImage();
+					wordInput.value = "";
+					form.style.display = "none";
+					btnLuu.disabled = true;
+					btnLuu.style.opacity = "0.6";
+					btnLuu.style.cursor = "not-allowed";
+					window.scrollTo({top:0, behavior:'smooth'});
+				})
+				.catch(err => { console.error(err); alert("Có lỗi xảy ra khi gửi đơn."); });
+		});
+				});
+	</script>
+	<partial name="_ValidationScriptsPartial" />
+}
+

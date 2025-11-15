@@ -1,29 +1,43 @@
+﻿using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Thêm dịch vụ MVC (Controllers + Views)
 builder.Services.AddControllersWithViews();
+
+// Cấu hình Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(3); // Session tồn tại tối đa 3 giờ
+    options.Cookie.HttpOnly = true; // Bảo mật hơn
+    options.Cookie.IsEssential = true; // Cần thiết cho chức năng cơ bản
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Cấu hình lỗi cho môi trường Production
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+// Cấu hình middleware
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// Định tuyến cho các Area khác nhau
+app.MapControllerRoute(
+    name: "area",
+    pattern: "{area:exists}/{controller=DangNhap}/{action=Index}/{id?}");
 
+
+// Định tuyến cho các controller mặc định
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

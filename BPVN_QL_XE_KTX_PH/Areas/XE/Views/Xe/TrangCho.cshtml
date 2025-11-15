@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewData["Title"] = "TrangCho";
+    Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<BPVN_QL_XE_KTX_PH.Areas.XE.Controllers.XeController.DonViewModel>
+
+
+<h2 style="text-align:center; margin-bottom:2rem; color:#1e3c72;">📋 Danh sách đơn Chờ</h2>
+
+<!-- Nút duyệt nhanh -->
+<div style="text-align:center; margin-bottom:1.5rem;">
+    <button id="duyetNhanhBtn"
+            style="background:linear-gradient(90deg,#1e3c72,#2a5298);color:#fff;padding:10px 20px;
+                   border:none;border-radius:8px;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+        ✅ Duyệt nhanh
+    </button>
+</div>
+
+<!-- Bảng danh sách đơn -->
+<table style="width:100%; border-collapse:collapse; text-align:left; font-family:Segoe UI,sans-serif;">
+    <thead>
+        <tr style="background:#1e3c72; color:#fff;">
+            <th style="padding:10px; width:40px;"></th>
+            <th style="padding:10px;">Ảnh</th>
+            <th style="padding:10px;">Tiêu đề</th>
+            <th style="padding:10px;">Người tạo</th>
+            <th style="padding:10px;">Cổng</th>
+            <th style="padding:10px;">Bộ phận</th>
+            <th style="padding:10px;">Thời gian tạo</th>
+            <th style="padding:10px;">Giờ vào dự kiến</th>
+            <th style="padding:10px;">Thời gian vào</th>
+            <th style="padding:10px;">Thời gian ra</th>
+            <th style="padding:10px;">Trạng thái</th>
+            <th style="padding:10px;">Người duyệt</th>
+            <th style="padding:10px;">Trạng thái nộp đơn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var don in Model)
+        {
+            <tr class="don-row" data-id="@don.IdDon" style="border-bottom:1px solid #ddd; cursor:pointer;">
+                <td style="padding:8px; text-align:center;">
+                    @if (don.TrangThai != "Đã duyệt")
+                    {
+                        <input type="checkbox" class="chonDon" value="@don.IdDon" style="width:18px; height:18px; cursor:pointer;">
+                    }
+                </td>
+                <td style="padding:8px; text-align:center;">
+                    @if (don.Anh != null && don.Anh.Length > 0)
+                    {
+                        var base64 = Convert.ToBase64String(don.Anh);
+                        <img src="data:image/png;base64,@base64"
+                             style="width:60px; height:60px; object-fit:cover; border-radius:5px; border:1px solid #ccc;" />
+                    }
+                    else
+                    {
+                        <span style="color:#6c757d;">Chưa có ảnh</span>
+                    }
+                </td>
+                <td style="padding:8px;">@don.TieuDe</td>
+                <td style="padding:8px;">@don.TenNguoiTao</td>
+                <td style="padding:8px;">@don.CongVao</td>
+                <td style="padding:8px;">@don.BoPhanDangKy</td>
+                <td style="padding:8px;">@(don.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                <td style="padding:8px;">@(don.GioVaoDuKien?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                <td style="padding:8px;">@(don.ThoiGianVao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                <td style="padding:8px;">@(don.ThoiGianRa?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                <td style="padding:8px;">
+                    <span style="padding:0.3rem 0.6rem; border-radius:5px; font-weight:bold;
+                                         background-color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ffc107" : "#198754");
+                                         color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#212529" : "#fff");">
+                        @don.TrangThai
+                    </span>
+                </td>
+                <td style="padding:8px;">@(don.TenNguoiDuyet ?? "-")</td>
+                <td style="padding:8px;">
+                    <span style="padding:0.3rem 0.6rem; border-radius:5px; font-weight:bold;
+                  /* Đảo ngược màu sắc dựa trên logic của bạn */
+                  background-color:@(don.TrangThaiNhap == 1 ? "#198754" : "#ffc107");
+                  color:@(don.TrangThaiNhap == 1 ? "#fff" : "#212529");">
+
+                        @(don.TrangThaiNhap == 1 ? "Đã nộp đơn" : "Đơn chưa nộp")
+
+                    </span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const duyetBtn = document.getElementById("duyetNhanhBtn");
+
+            duyetBtn.addEventListener("click", function() {
+                const selected = Array.from(document.querySelectorAll(".chonDon:checked"))
+                                      .map(cb => parseInt(cb.value));
+
+                if(selected.length === 0){
+                    alert("Vui lòng chọn ít nhất một đơn để duyệt!");
+                    return;
+                }
+
+                // Xác nhận trước khi duyệt
+                if(!confirm(`Bạn có chắc chắn muốn duyệt ${selected.length} đơn này không?`)) return;
+
+                fetch("/DonXetDuyet/AddTrangCho", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(selected)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success){
+                        alert(`Đã duyệt ${data.updated} đơn thành công!`);
+                        location.reload();
+                    } else {
+                        alert(data.message || "Duyệt nhanh thất bại!");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Có lỗi xảy ra!");
+                });
+            });
+
+            // Click vào hàng để xem chi tiết trong tab mới
+            document.querySelectorAll(".don-row").forEach(row => {
+                row.addEventListener("click", function(e) {
+                    if(e.target.tagName.toLowerCase() === 'input') return; // bỏ qua checkbox
+                    const idDon = this.getAttribute("data-id");
+                    window.open(`/DonXetDuyet/CTTrangDuyet/${idDon}`, '_blank');
+                });
+            });
+        });
+    </script>
+}

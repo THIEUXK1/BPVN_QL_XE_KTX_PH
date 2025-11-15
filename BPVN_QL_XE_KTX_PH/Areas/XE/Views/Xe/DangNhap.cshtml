@@ -1,0 +1,168 @@
+﻿
+@{
+    ViewData["Title"] = "DangNhap";
+    Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
+    var rememberedEmail = Context.Request.Cookies["RememberedEmail"] ?? "";
+}
+
+<!DOCTYPE html>
+<html lang="vi" style="height:100%; width:100%; margin:0; padding:0;">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body style="margin:0;
+             height:100vh;
+             width:100vw;
+             display:flex;
+             justify-content:center;
+             align-items:center;
+             background:linear-gradient(135deg, #dbe6f6, #c5796d);
+             font-family:'Segoe UI', sans-serif;
+             overflow:hidden;">
+
+    <!-- Thẻ bao form đăng nhập -->
+    <div style="position:absolute;
+                top:50%;
+                left:50%;
+                transform:translate(-50%,-50%);
+                width:90%;
+                max-width:420px;
+                background:rgba(255,255,255,0.98);
+                border:2px solid #000;
+                border-radius:20px;
+                padding:45px 40px;
+                box-shadow:0 12px 35px rgba(0,0,0,0.25);
+                text-align:center;
+                backdrop-filter:blur(8px);
+                transition:0.3s;">
+
+        <!-- Tiêu đề -->
+        <h2 style="color:#1e3c72;
+                   margin-bottom:10px;
+                   font-size:2rem;
+                   font-weight:800;
+                   letter-spacing:1px;">
+            🔐 ĐĂNG NHẬP
+        </h2>
+        <p style="color:#666; margin-bottom:28px; font-size:1rem;">Chào mừng bạn quay lại 👋</p>
+
+        <!-- Hiển thị lỗi nếu có -->
+        @if (ViewBag.Error != null)
+        {
+            <div style="background:#ffe5e5;
+                                color:#b30000;
+                                border:1px solid #b30000;
+                                border-radius:10px;
+                                padding:12px;
+                                margin-bottom:22px;
+                                font-weight:600;">
+                **@ViewBag.Error**
+            </div>
+        }
+
+        <!-- Form đăng nhập -->
+        <form method="post"
+              asp-action="DangNhap"
+              asp-controller="TaiKhoan"
+              asp-area="DonXetDuyet"
+              style="text-align:left;">
+
+            <!-- Email -->
+            <label for="email" style="display:block;
+                                      font-weight:700;
+                                      color:#1e3c72;
+                                      margin-bottom:6px;">
+                Tên đăng nhập hoặc Email
+            </label>
+            <input type="text" id="email" name="email" value="@rememberedEmail" placeholder="Nhập email của bạn"
+                   required
+                   style="width:95%;
+                          padding:13px 15px;
+                          border:2px solid #000;
+                          border-radius:10px;
+                          font-size:1rem;
+                          outline:none;
+                          margin-bottom:20px;
+                          box-shadow:inset 0 2px 5px rgba(0,0,0,0.1);
+                          transition:0.3s;">
+
+            <!-- Mật khẩu -->
+            <label for="matKhau" style="display:block;
+                                        font-weight:700;
+                                        color:#1e3c72;
+                                        margin-bottom:6px;">
+                Mật khẩu
+            </label>
+            <input type="password" id="matKhau" name="matKhau" placeholder="Nhập mật khẩu"
+                   required
+                   style="width:95%;
+                          padding:13px 15px;
+                          border:2px solid #000;
+                          border-radius:10px;
+                          font-size:1rem;
+                          outline:none;
+                          margin-bottom:20px;
+                          box-shadow:inset 0 2px 5px rgba(0,0,0,0.1);
+                          transition:0.3s;">
+
+            <!-- Ghi nhớ -->
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:22px;">
+                <input type="checkbox" id="rememberMe" name="rememberMe" style="width:18px; height:18px; cursor:pointer;">
+                <label for="rememberMe" style="cursor:pointer; color:#000; font-weight:500;">Ghi nhớ tài khoản</label>
+            </div>
+
+            <!-- Nút đăng nhập -->
+            <button type="submit"
+                    style="width:100%;
+                           padding:15px 0;
+                           border:none;
+                           border-radius:12px;
+                           background:linear-gradient(90deg, #1e3c72, #2a5298);
+                           color:#fff;
+                           font-weight:bold;
+                           font-size:1.1rem;
+                           letter-spacing:0.5px;
+                           cursor:pointer;
+                           box-shadow:0 10px 25px rgba(42,82,152,0.5);
+                           transition:all 0.3s ease;">
+                Đăng nhập
+            </button>
+        </form>
+
+        <!-- Liên hệ -->
+        <p style="margin-top:25px; font-size:0.95rem; color:#555;">
+            Chưa có tài khoản?
+            <a href="#" style="color:#2a5298; font-weight:600; text-decoration:none;">Liên hệ quản trị</a>
+        </p>
+    </div>
+
+    <script>
+        // Hiệu ứng focus input
+        document.querySelectorAll('input[type="text"], input[type="password"]').forEach(i => {
+            i.addEventListener('focus', e => {
+                e.target.style.borderColor = '#2a5298';
+                e.target.style.boxShadow = '0 0 10px rgba(42,82,152,0.6)';
+            });
+            i.addEventListener('blur', e => {
+                e.target.style.borderColor = '#000';
+                e.target.style.boxShadow = 'inset 0 2px 5px rgba(0,0,0,0.1)';
+            });
+        });
+
+        // Hiệu ứng hover nút
+        const btn = document.querySelector('button[type="submit"]');
+        btn.addEventListener('mouseover', () => {
+            btn.style.transform = 'translateY(-3px) scale(1.05)';
+            btn.style.boxShadow = '0 12px 28px rgba(42,82,152,0.7)';
+        });
+        btn.addEventListener('mouseout', () => {
+            btn.style.transform = 'translateY(0) scale(1)';
+            btn.style.boxShadow = '0 10px 25px rgba(42,82,152,0.5)';
+        });
+    </script>
+
+</body>
+</html>
