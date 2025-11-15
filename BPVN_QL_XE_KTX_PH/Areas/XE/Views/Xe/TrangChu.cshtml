@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "TrangChu";
     Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
 }
@@ -7,8 +6,6 @@
 @model IEnumerable<DonViewModel>
 
 @{
-
-    // Nhóm theo ngày tạo
     var donsByDate = Model.OrderByDescending(d => d.NgayTao)
                           .GroupBy(d => d.NgayTao?.Date ?? DateTime.MinValue)
                           .ToList();
@@ -25,22 +22,19 @@
                              .ToList();
 }
 
-<h2 style="text-align:center;margin-bottom:2rem;color:#1e3c72;font-family:Segoe UI,sans-serif;">
+<h2 style="text-align:center;margin-bottom:2rem;color:#0d6efd;font-family:Segoe UI,sans-serif;">
     📄 Danh sách đơn đăng ký
 </h2>
 
-<!-- BỘ LỌC -->
-<div id="filterPanel" style="display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;margin-bottom:2rem;">
+<div id="filterPanel" style="display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;margin-bottom:2rem;width:95%;margin-left:auto;margin-right:auto;">
     <div>
         <label><strong>📅 Ngày tạo:</strong></label>
-        <input type="date" id="filterDate" class="form-control"
-               style="padding:6px;border-radius:6px;border:1px solid #ccc;">
+        <input type="date" id="filterDate" style="width:95%;padding:6px;border-radius:6px;border:1px solid #aaa;background:#f8f9fa;">
     </div>
 
     <div>
         <label><strong>👤 Người duyệt:</strong></label>
-        <select id="filterNguoiDuyet" class="form-select"
-                style="padding:6px;border-radius:6px;border:1px solid #ccc;">
+        <select id="filterNguoiDuyet" style="width:95%;padding:6px;border-radius:6px;border:1px solid #aaa;background:#f8f9fa;">
             <option value="">-- Tất cả --</option>
             @foreach (var nd in nguoiDuyetList)
             {
@@ -51,14 +45,12 @@
 
     <div>
         <label><strong>🧾 Mã đơn:</strong></label>
-        <input type="text" id="filterMaDon" placeholder="Nhập mã đơn..."
-               style="padding:6px;border-radius:6px;border:1px solid #ccc;">
+        <input type="text" id="filterMaDon" placeholder="Nhập mã đơn..." style="width:95%;padding:6px;border-radius:6px;border:1px solid #aaa;background:#f8f9fa;">
     </div>
 
     <div>
         <label><strong>⚙️ Trạng thái:</strong></label>
-        <select id="filterTrangThai" class="form-select"
-                style="padding:6px;border-radius:6px;border:1px solid #ccc;">
+        <select id="filterTrangThai" style="width:95%;padding:6px;border-radius:6px;border:1px solid #aaa;background:#f8f9fa;">
             <option value="">-- Tất cả --</option>
             @foreach (var tt in trangThaiList)
             {
@@ -68,27 +60,22 @@
     </div>
 
     <div style="display:flex;align-items:end;">
-        <button id="btnReset" class="btn btn-secondary"
-                style="padding:6px 12px;border-radius:6px;">
+        <button id="btnReset" style="width:95%;padding:6px 12px;border-radius:6px;background:#0d6efd;color:#fff;border:none;cursor:pointer;">
             🔄 Xóa lọc
         </button>
     </div>
 </div>
 
-<!-- DANH SÁCH ĐƠN -->
-<div id="donGrid" style="display:flex;flex-direction:column;gap:1rem;align-items:center;">
+<div id="donGrid" style="display:flex;flex-direction:column;gap:1rem;align-items:center;width:95%;margin-left:auto;margin-right:auto;">
     @foreach (var group in donsByDate)
     {
-        <div class="date-group" data-date="@group.Key.ToString("yyyy-MM-dd")"
-             style="width:100%;text-align:center;margin:2rem 0 1rem;position:relative;">
-            <hr style="border:none; border-top:1px solid #ccc; margin:0.5rem 0;">
-            <span style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);
-                                     background:#fff;padding:0 0.5rem;font-weight:bold;color:#1e3c72;">
+        <div class="date-group" data-date="@group.Key.ToString("yyyy-MM-dd")" style="width:100%;text-align:center;margin:2rem 0 1rem;position:relative;">
+            <hr style="border:none;border-top:1px solid #ccc;margin:0.5rem 0;">
+            <span style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:#fff;padding:0 0.5rem;font-weight:bold;color:#0d6efd;">
                 📅 @((group.Key == DateTime.MinValue) ? "Chưa xác định" : group.Key.ToString("dd/MM/yyyy"))
             </span>
 
-            <div class="don-group"
-                 style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;">
+            <div class="don-group" style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:flex-start;">
                 @foreach (var don in group)
                 {
                     <div class="don-card"
@@ -97,33 +84,29 @@
                          data-nguoiduyet="@don.TenNguoiDuyet"
                          data-madon="@don.MaDon"
                          data-trangthai="@don.TrangThai"
-                         style="position:relative;width:300px;border-radius:12px;
-                                                        display:flex;flex-direction:column;box-shadow:0 4px 14px rgba(0,0,0,0.15);
-                                                        cursor:pointer;background:#fff;transition:transform 0.3s, box-shadow 0.3s;
-                                                        overflow:visible;">
+                         style="flex:0 0 calc((100% - 5*1.5rem)/6);display:flex;flex-direction:column;background:#ffffff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.1);cursor:pointer;overflow:visible;position:relative;transition:transform 0.3s,box-shadow 0.3s;">
 
-                        <!-- CôngVao nổi ra ngoài góc trên trái -->
-                        <div style="position:absolute;top:-10px;left:-10px;background:#28a745;color:#fff;
-                                                            font-weight:bold;padding:6px 12px;border-radius:8px;font-size:1.1rem;
-                                                            z-index:10;box-shadow:0 2px 6px rgba(0,0,0,0.25);">
+                        <div style="position:absolute;top:-10px;left:-10px;
+                    background:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ff6b6b" : "#20c997");
+                    color:#fff;font-weight:bold;padding:6px 12px;border-radius:8px;font-size:1.1rem;
+                    z-index:10;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                             @don.CongVao
                         </div>
 
-                        <div style="background:linear-gradient(90deg,#1e3c72,#2a5298);color:#fff;
-                                                            font-weight:bold;text-align:center;padding:0.75rem;font-size:1.1rem;
-                                                            border-top-left-radius:12px;border-top-right-radius:12px;">
+                        <div style="background:linear-gradient(90deg,
+                    @(don.TrangThai == "Đang chờ xét duyệt" ? "#ff6b6b" : "#0dcaf0"),
+                    @(don.TrangThai == "Đang chờ xét duyệt" ? "#ff8787" : "#38d9a9"));
+                    color:#fff;font-weight:bold;text-align:center;padding:0.75rem;font-size:1.1rem;
+                    border-top-left-radius:12px;border-top-right-radius:12px;">
                             @don.TieuDe
                         </div>
 
-                        <div style="padding:1rem;flex:1;display:flex;flex-direction:column;
-                                                            gap:0.4rem;align-items:center;">
+                        <div style="padding:1rem;flex:1;display:flex;flex-direction:column;gap:0.4rem;align-items:center;">
                             <div style="width:100%;text-align:center;margin-bottom:0.5rem;">
                                 @if (don.Anh != null && don.Anh.Length > 0)
                                 {
                                     var base64 = Convert.ToBase64String(don.Anh);
-                                    <img src="data:image/png;base64,@base64"
-                                         style="max-width:100%;max-height:120px;border-radius:8px;
-                                                                                    border:1px solid #ccc;object-fit:cover;" />
+                                    <img src="data:image/png;base64,@base64" style="max-width:100%;max-height:120px;border-radius:8px;border:1px solid #ccc;object-fit:cover;" />
                                 }
                                 else
                                 {
@@ -131,32 +114,14 @@
                                 }
                             </div>
 
-                            <p style="margin:0;">
-                                <strong>Người tạo:</strong>
-                                <span style="color:#1e3c72;">@don.TenNguoiTao</span>
-                            </p>
-                            <p style="margin:0;">
-                                <strong>Bộ phận:</strong>
-                                <span style="color:#1e3c72;">@don.BoPhanDangKy</span>
-                            </p>
-                            <p style="margin:0;">
-                                <strong>Mã đơn:</strong>
-                                <span style="color:#1e3c72;">@don.MaDon</span>
-                            </p>
-                            <p style="margin:0;">
-                                <strong>Người duyệt:</strong>
-                                <span style="color:#1e3c72;">@(don.TenNguoiDuyet ?? "-")</span>
-                            </p>
-                            <p style="margin:0;">
-                                <strong>Thời gian tạo:</strong>
-                                <span style="color:#1e3c72;">@(don.NgayTao?.ToString("HH:mm") ?? "-")</span>
-                            </p>
+                            <p style="margin:0;"><strong>Người tạo:</strong> <span style="color:#0d6efd;">@don.TenNguoiTao</span></p>
+                            <p style="margin:0;"><strong>Bộ phận:</strong> <span style="color:#0d6efd;">@don.BoPhanDangKy</span></p>
+                            <p style="margin:0;"><strong>Mã đơn:</strong> <span style="color:#0d6efd;">@don.MaDon</span></p>
+                            <p style="margin:0;"><strong>Người duyệt:</strong> <span style="color:#0d6efd;">@(don.TenNguoiDuyet ?? "-")</span></p>
+                            <p style="margin:0;"><strong>Thời gian tạo:</strong> <span style="color:#0d6efd;">@(don.NgayTao?.ToString("HH:mm") ?? "-")</span></p>
                             <p style="margin:0;">
                                 <strong>Trạng thái:</strong>
-                                <span style="display:inline-block;padding:0.25rem 0.5rem;border-radius:0.25rem;
-                                                                     background-color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ffc107" : "#198754");
-                                                                     color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#212529" : "#fff");
-                                                                     font-weight:bold;font-size:0.9rem;">
+                                <span style="display:inline-block;padding:0.25rem 0.5rem;border-radius:0.25rem;font-weight:bold;font-size:0.9rem;background-color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ff6b6b" : "#51cf66");color:#fff;">
                                     @don.TrangThai
                                 </span>
                             </p>
@@ -170,79 +135,41 @@
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const cards = document.querySelectorAll(".don-card");
+        document.addEventListener("DOMContentLoaded",()=>{
+            const cards=document.querySelectorAll(".don-card");
+            const filterDate=document.getElementById("filterDate");
+            const filterNguoiDuyet=document.getElementById("filterNguoiDuyet");
+            const filterMaDon=document.getElementById("filterMaDon");
+            const filterTrangThai=document.getElementById("filterTrangThai");
+            const btnReset=document.getElementById("btnReset");
 
-            // 🌟 Hiệu ứng hover
-            cards.forEach(card => {
-                card.addEventListener("mouseover", () => {
-                    card.style.transform = "translateY(-5px)";
-                    card.style.boxShadow = "0 8px 22px rgba(0,0,0,0.25)";
-                });
-                card.addEventListener("mouseout", () => {
-                    card.style.transform = "translateY(0)";
-                    card.style.boxShadow = "0 4px 14px rgba(0,0,0,0.15)";
-                });
+            cards.forEach(card=>{
+                card.addEventListener("mouseover",()=>{card.style.transform="translateY(-5px)";card.style.boxShadow="0 8px 22px rgba(0,0,0,0.15)";});
+                card.addEventListener("mouseout",()=>{card.style.transform="translateY(0)";card.style.boxShadow="0 6px 20px rgba(0,0,0,0.1)";});
+                card.addEventListener("click",()=>{const id=card.getAttribute("data-id");if(id){window.open(`/DonXetDuyet/ChiTietDon/${id}`,'_blank');}});
             });
 
-            // 🌟 Khi click vào card → mở chi tiết đơn trong tab mới
-            cards.forEach(card => {
-                card.addEventListener("click", () => {
-                    const id = card.getAttribute("data-id");
-                    if (id) {
-                        window.open(`/DonXetDuyet/ChiTietDon/${id}`, '_blank');
-                    }
-                });
-            });
+            [filterDate,filterNguoiDuyet,filterMaDon,filterTrangThai].forEach(el=>{el.addEventListener("input",applyFilters);el.addEventListener("change",applyFilters);});
+            btnReset.addEventListener("click",()=>{filterDate.value="";filterNguoiDuyet.value="";filterMaDon.value="";filterTrangThai.value="";applyFilters();});
 
-            // 🌟 Các input lọc
-            const filterDate = document.getElementById("filterDate");
-            const filterNguoiDuyet = document.getElementById("filterNguoiDuyet");
-            const filterMaDon = document.getElementById("filterMaDon");
-            const filterTrangThai = document.getElementById("filterTrangThai");
-            const btnReset = document.getElementById("btnReset");
+            function applyFilters(){
+                const dateVal=filterDate.value.trim();
+                const nguoiVal=filterNguoiDuyet.value.trim().toLowerCase();
+                const maDonVal=filterMaDon.value.trim().toLowerCase().replace(/[^a-z0-9]/g,"");
+                const trangThaiVal=filterTrangThai.value.trim().toLowerCase();
 
-            [filterDate, filterNguoiDuyet, filterMaDon, filterTrangThai].forEach(el => {
-                el.addEventListener("input", applyFilters);
-                el.addEventListener("change", applyFilters);
-            });
-
-            btnReset.addEventListener("click", () => {
-                filterDate.value = "";
-                filterNguoiDuyet.value = "";
-                filterMaDon.value = "";
-                filterTrangThai.value = "";
-                applyFilters();
-            });
-
-            // 🌟 Hàm lọc chính
-            function applyFilters() {
-                const dateVal = filterDate.value.trim();
-                const nguoiVal = filterNguoiDuyet.value.trim().toLowerCase();
-                const maDonValRaw = filterMaDon.value.trim().toLowerCase();
-                const maDonVal = maDonValRaw.replace(/[^a-z0-9]/g, ""); // bỏ ký tự đặc biệt
-                const trangThaiVal = filterTrangThai.value.trim().toLowerCase();
-
-                cards.forEach(card => {
-                    const cDate = (card.getAttribute("data-date") || "").trim();
-                    const cNguoi = (card.getAttribute("data-nguoiduyet") || "").toLowerCase();
-                    const cMaDonRaw = (card.getAttribute("data-madon") || "").toLowerCase();
-                    const cMaDon = cMaDonRaw.replace(/[^a-z0-9]/g, ""); // bỏ ký tự đặc biệt
-                    const cTrangThai = (card.getAttribute("data-trangthai") || "").toLowerCase();
-
-                    const match =
-                        (!dateVal || cDate === dateVal) &&
-                        (!nguoiVal || cNguoi.includes(nguoiVal)) &&
-                        (!maDonVal || cMaDon.includes(maDonVal)) &&
-                        (!trangThaiVal || cTrangThai.includes(trangThaiVal));
-
-                    card.style.display = match ? "flex" : "none";
+                cards.forEach(card=>{
+                    const cDate=(card.getAttribute("data-date")||"").trim();
+                    const cNguoi=(card.getAttribute("data-nguoiduyet")||"").toLowerCase();
+                    const cMaDon=(card.getAttribute("data-madon")||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+                    const cTrangThai=(card.getAttribute("data-trangthai")||"").toLowerCase();
+                    const match=(!dateVal||cDate===dateVal)&&(!nguoiVal||cNguoi.includes(nguoiVal))&&(!maDonVal||cMaDon.includes(maDonVal))&&(!trangThaiVal||cTrangThai.includes(trangThaiVal));
+                    card.style.display=match?"flex":"none";
                 });
 
-                // 🌟 Ẩn nhóm ngày không còn đơn hiển thị
-                document.querySelectorAll(".date-group").forEach(group => {
-                    const visibleCards = group.querySelectorAll(".don-card[style*='display: flex']").length;
-                    group.style.display = visibleCards > 0 ? "block" : "none";
+                document.querySelectorAll(".date-group").forEach(group=>{
+                    const visibleCards=group.querySelectorAll(".don-card[style*='display: flex']").length;
+                    group.style.display=visibleCards>0?"block":"none";
                 });
             }
         });
