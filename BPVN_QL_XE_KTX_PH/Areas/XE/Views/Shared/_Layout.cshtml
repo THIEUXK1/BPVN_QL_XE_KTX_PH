@@ -16,25 +16,25 @@
     <title>@ViewData["Title"] - Hệ thống đơn xét duyệt</title>
 </head>
 
-<body style="margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:#eef3f9;min-height:100vh;color:#333;display:flex;">
+<body style="margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:#e6f0fa;min-height:100vh;color:#333;display:flex;">
 
     @if (!isLoginPage)
     {
-        <aside style="width:250px;background:linear-gradient(180deg,#1e3c72,#2a5298);color:#fff;padding:20px 15px;display:flex;flex-direction:column;gap:20px;box-shadow:4px 0 12px rgba(0,0,0,0.25);position:fixed;top:0;left:0;bottom:0;">
+        <aside style="width:250px;background:linear-gradient(180deg,#3a6ea5,#5a8cc5);color:#fff;padding:20px 15px;display:flex;flex-direction:column;gap:20px;box-shadow:4px 0 12px rgba(0,0,0,0.15);position:fixed;top:0;left:0;bottom:0;">
             <a href="/DonXetDuyet/TrangChu" style="font-size:1.8rem;font-weight:bold;color:#fff;text-decoration:none;letter-spacing:0.5px;">DonXetDuyet</a>
 
             <nav style="display:flex;flex-direction:column;gap:12px;margin-top:10px;">
-                <a href="/DonXetDuyet/TrangChu" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.1);text-decoration:none;font-weight:500;">Trang chủ</a>
+                <a href="/DonXetDuyet/TrangChu" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.15);text-decoration:none;font-weight:500;">Trang chủ</a>
 
                 @if (currentUserRole == "NhanVien" || currentUserRole == "QuanLy")
                 {
-                    <a href="/DonXetDuyet/TrangTao" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.1);text-decoration:none;font-weight:500;">Tạo đơn mới</a>
-                    <a href="/DonXetDuyet/TrangCho" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.1);text-decoration:none;font-weight:500;">Xác nhận</a>
+                    <a href="/DonXetDuyet/TrangTao" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.15);text-decoration:none;font-weight:500;">Tạo đơn mới</a>
+                    <a href="/DonXetDuyet/TrangCho" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.15);text-decoration:none;font-weight:500;">Xác nhận</a>
                 }
 
                 @if (currentUserRole == "QuanLy")
                 {
-                    <a href="/DonXetDuyet/TrangDuyet" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.1);text-decoration:none;font-weight:500;">Duyệt đơn</a>
+                    <a href="/DonXetDuyet/TrangDuyet" style="color:#fff;padding:10px 15px;border-radius:8px;background:rgba(255,255,255,0.15);text-decoration:none;font-weight:500;">Duyệt đơn</a>
                 }
             </nav>
 
@@ -43,7 +43,7 @@
                 {
                     <div id="userMenuWrapper" style="cursor:pointer;">
                         <span id="userMenuButton" style="font-weight:bold;color:#fff;">@currentUserName</span>
-                        <div id="userDropdown" style="position:absolute;bottom:35px;left:0;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.25);display:none;flex-direction:column;min-width:180px;z-index:1000;">
+                        <div id="userDropdown" style="position:absolute;bottom:35px;left:0;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.15);display:none;flex-direction:column;min-width:180px;z-index:1000;">
                             <a href="/DonXetDuyet/HoSo" style="padding:10px 15px;color:#2a5298;text-decoration:none;">Hồ sơ cá nhân</a>
                             <a href="/DonXetDuyet/DangXuat" style="padding:10px 15px;color:#2a5298;text-decoration:none;">Đăng xuất</a>
                         </div>
@@ -52,13 +52,13 @@
                 }
                 else
                 {
-                    <a href="/DonXetDuyet/DangNhap" style="padding:8px 18px;border-radius:8px;text-decoration:none;background:#fff;color:#2a5298;font-weight:600;box-shadow:0 4px 10px rgba(0,0,0,0.2);display:inline-block;">Đăng nhập</a>
+                    <a href="/DonXetDuyet/DangNhap" style="padding:8px 18px;border-radius:8px;text-decoration:none;background:#fff;color:#3a6ea5;font-weight:600;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;">Đăng nhập</a>
                 }
             </div>
         </aside>
 
         <main style="margin-left:250px;width:100%;padding:40px;display:flex;justify-content:center;align-items:flex-start;">
-            <div style="background:#fff;width:95%;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);padding:40px;">
+            <div style="background:#fff;width:95%;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.05);padding:40px;">
                 @RenderBody()
             </div>
         </main>

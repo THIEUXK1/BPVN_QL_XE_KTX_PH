@@ -312,9 +312,15 @@
 			});
 
 			// --- Submit form ---
-		btnLuu.addEventListener('click', ()=>{
+		btnLuu.addEventListener('click', () => {
+			// Kiểm tra các trường bắt buộc
+			if (!tieuDe.value.trim()) { alert("Vui lòng nhập Tiêu đề"); tieuDe.focus(); return; }
+			if (!selectBoPhan.value) { alert("Vui lòng chọn Bộ phận đăng ký"); selectBoPhan.focus(); return; }
+			if (!inputMucDich.value.trim()) { alert("Vui lòng nhập Mục đích"); inputMucDich.focus(); return; }
+			if (!selectCongVao.value) { alert("Vui lòng chọn Cổng vào"); selectCongVao.focus(); return; }
+
 			// Kiểm tra bắt buộc ảnh
-			if(toggleAnhCheck.checked && fileInput.files.length === 0){
+			if (toggleAnhCheck.checked && fileInput.files.length === 0) {
 				alert("Vui lòng thêm ảnh minh họa trước khi lưu.");
 				return;
 			}
@@ -330,8 +336,8 @@
 			formData.append("GioVaoDuKien", inputGioVaoDuKien.value);
 			formData.append("ThoiGianRa", inputThoiGianRa.value);
 
-			if(fileInput.files.length>0) formData.append("AnhFile", fileInput.files[0]); // bắt buộc nếu toggleAnhCheck.checked
-			if(wordInput.files.length>0) formData.append("WordFile", wordInput.files[0]); // tùy chọn
+			if (fileInput.files.length > 0) formData.append("AnhFile", fileInput.files[0]);
+			if (wordInput.files.length > 0) formData.append("WordFile", wordInput.files[0]);
 
 			fetch("/DonXetDuyet/addTrangTao", { method: "POST", body: formData })
 				.then(resp => resp.ok ? resp.text() : Promise.reject("Lỗi gửi dữ liệu"))
@@ -350,7 +356,7 @@
 				})
 				.catch(err => { console.error(err); alert("Có lỗi xảy ra khi gửi đơn."); });
 		});
-				});
+						});
 	</script>
 	<partial name="_ValidationScriptsPartial" />
 }

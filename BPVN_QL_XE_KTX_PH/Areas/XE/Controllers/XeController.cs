@@ -157,6 +157,8 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
             public int? TrangThaiNhap { get; set; }
             public int? IdNguoiXacNhanCho { get; set; }
             public string? MaDon { get; set; }
+            public string? DuongDan { get; set; }
+
         }
         #endregion
 
@@ -191,9 +193,6 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
             // Kiểm tra bắt buộc ảnh minh họa phải có
             if (AnhFile == null || AnhFile.Length == 0)
                 return BadRequest("Vui lòng tải lên ảnh minh họa.");
-
-            if (!ModelState.IsValid)
-                return BadRequest("Dữ liệu không hợp lệ");
 
             // Gán thông tin chung cho đơn
             model.MaDon = "BPVN-" + DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -236,19 +235,17 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
         #endregion
 
         #region Trang Chờ
-        // GET: /DonXetDuyet/TrangTao
         [HttpGet("/DonXetDuyet/TrangCho")]
         public IActionResult TrangCho()
         {
             // --- Kiểm tra đăng nhập ---
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
-            {
                 return Redirect("/DonXetDuyet/DangNhap");
-            }
 
-            // Lấy danh sách đơn với thông tin người tạo
-            var dons = _context.DonRaVaos.Where(c => c.IdNguoiTao == userId)
+            // --- Lấy danh sách đơn theo người tạo ---
+            var dons = _context.DonRaVaos
+                .Where(d => d.IdNguoiTao == userId)
                 .Include(d => d.IdNguoiTaoNavigation)
                 .OrderByDescending(d => d.NgayTao)
                 .Select(d => new DonViewModel
@@ -268,25 +265,25 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                     CongVao = d.CongVao,
                     TrangThaiNhap = d.TrangThaiNhap,
                     IdNguoiXacNhanCho = d.IdNguoiXacNhanCho,
+                    DuongDan = d.DuongDan
                 })
                 .ToList();
 
-            // Lấy danh sách trạng thái duy nhất từ database
+            // --- Lấy danh sách trạng thái duy nhất ---
             var trangThaiList = dons
                 .Select(d => d.TrangThai.Trim())
                 .Distinct()
                 .ToList();
 
-            // Gửi trạng thái lên ViewBag để hiển thị filter
             ViewBag.TrangThaiList = trangThaiList;
 
             return View(dons);
         }
 
-        [HttpPost("/DonXetDuyet/addTrangCho")]
-        public IActionResult addTrangCho([FromBody] List<int> idDons)
+        [HttpPost("/DonXetDuyet/AddTrangCho")]
+        public IActionResult AddTrangCho([FromBody] List<int> idDons)
         {
-            // Lấy thông tin người duyệt từ session
+            // --- Kiểm tra đăng nhập ---
             var userId = HttpContext.Session.GetInt32("UserId");
             var userName = HttpContext.Session.GetString("UserName");
 
@@ -295,32 +292,27 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                 return Json(new { success = false, message = "Bạn chưa đăng nhập" });
             }
 
-            // Lấy các đơn chưa duyệt
+            // --- Lấy các đơn hợp lệ chưa được duyệt ---
             var dons = _context.DonRaVaos
                         .Where(d => idDons.Contains(d.IdDon) && d.TrangThaiNhap != 1)
                         .ToList();
 
             if (!dons.Any())
-            {
-                return Json(new { success = false, message = "Không có đơn hợp lệ để đẩy đi" });
-            }
+                return Json(new { success = false, message = "Không có đơn hợp lệ để đẩy đi" });
 
-            // Cập nhật trạng thái và người duyệt
+            // --- Cập nhật trạng thái duyệt ---
             foreach (var don in dons)
             {
                 don.TrangThaiNhap = 1;
                 don.IdNguoiXacNhanCho = userId;
-
             }
 
             _context.SaveChanges();
 
-            // Trả về JSON với thông tin
+            // --- Trả về JSON ---
             var updatedIds = dons.Select(d => new { d.IdDon, d.TrangThai }).ToList();
-
             return Json(new { success = true, updatedCount = dons.Count, updatedIds });
         }
-
         #endregion
 
         #region Trang Duyệt
@@ -361,6 +353,7 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                     MucDich = d.MucDich,
                     CongVao = d.CongVao,
                     MaDon = d.MaDon,
+                    DuongDan = d.DuongDan
                 })
                 .ToList();
 
@@ -429,35 +422,52 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
             }
 
             // Lấy chi tiết đơn từ database
-            var don = _context.DonRaVaos
+            var donEntity = _context.DonRaVaos
                 .Include(d => d.IdNguoiTaoNavigation)
-                .Where(d => d.IdDon == id)
-                .Select(d => new DonViewModel
-                {
-                    IdDon = d.IdDon,
-                    TieuDe = d.TieuDe ?? "",
-                    BoPhanDangKy = d.BoPhanDangKy,
-                    TenNguoiTao = d.IdNguoiTaoNavigation != null ? d.IdNguoiTaoNavigation.HoTen : "Không xác định",
-                    Anh = d.Anh,
-                    NgayTao = d.NgayTao,
-                    GioVaoDuKien = d.GioVaoDuKien,
-                    ThoiGianVao = d.ThoiGianVao,
-                    ThoiGianRa = d.ThoiGianRa,
-                    TrangThai = string.IsNullOrEmpty(d.TrangThai) ? "Đang chờ xét duyệt" : d.TrangThai,
-                    TenNguoiDuyet = (_context.NguoiDungs.FirstOrDefault(c => c.IdNguoiDung == d.NguoiDuyet).HoTen),
-                    MucDich = d.MucDich,
-                    CongVao = d.CongVao,
-                    MaDon = d.MaDon,
-                })
-                .FirstOrDefault();
+                .FirstOrDefault(d => d.IdDon == id);
 
-            if (don == null)
+            if (donEntity == null)
             {
                 return NotFound("Đơn không tồn tại hoặc bạn không có quyền xem.");
             }
 
+            // Lấy tên người duyệt (nếu có)
+            string tenNguoiDuyet;
+            if (donEntity.NguoiDuyet.HasValue)
+            {
+                tenNguoiDuyet = _context.NguoiDungs
+                    .Where(c => c.IdNguoiDung == donEntity.NguoiDuyet.Value)
+                    .Select(c => c.HoTen)
+                    .FirstOrDefault() ?? "-";
+            }
+            else
+            {
+                tenNguoiDuyet = "-";
+            }
+
+            // Tạo ViewModel
+            var don = new DonViewModel
+            {
+                IdDon = donEntity.IdDon,
+                TieuDe = donEntity.TieuDe ?? "",
+                BoPhanDangKy = donEntity.BoPhanDangKy,
+                TenNguoiTao = donEntity.IdNguoiTaoNavigation?.HoTen ?? "Không xác định",
+                Anh = donEntity.Anh,
+                NgayTao = donEntity.NgayTao,
+                GioVaoDuKien = donEntity.GioVaoDuKien,
+                ThoiGianVao = donEntity.ThoiGianVao,
+                ThoiGianRa = donEntity.ThoiGianRa,
+                TrangThai = string.IsNullOrEmpty(donEntity.TrangThai) ? "Đang chờ xét duyệt" : donEntity.TrangThai,
+                TenNguoiDuyet = tenNguoiDuyet,
+                MucDich = donEntity.MucDich,
+                CongVao = donEntity.CongVao,
+                MaDon = donEntity.MaDon,
+                DuongDan = donEntity.DuongDan // để view hiển thị link tải file
+            };
+
             return View(don);
         }
+
 
 
         #endregion

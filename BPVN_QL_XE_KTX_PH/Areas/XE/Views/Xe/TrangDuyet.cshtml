@@ -1,127 +1,131 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "TrangDuyet";
     Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
 }
 @model IEnumerable<BPVN_QL_XE_KTX_PH.Areas.XE.Controllers.XeController.DonViewModel>
 
-<h2 style="text-align:center; margin-bottom:2rem; color:#1e3c72;">📋 Danh sách đơn cần duyệt</h2>
+<h2 style="text-align:center;margin-bottom:1.5rem;color:#0d3b66;font-size:1.5rem;font-weight:700;">📋 Danh sách đơn cần duyệt</h2>
 
-<!-- Nút duyệt nhanh -->
-<div style="text-align:center; margin-bottom:1.5rem;">
+<div style="text-align:center;margin-bottom:1.5rem;">
     <button id="duyetNhanhBtn"
-            style="background:linear-gradient(90deg,#1e3c72,#2a5298);color:#fff;padding:10px 20px;
-                   border:none;border-radius:8px;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+            style="background:linear-gradient(90deg,#4da8da,#97c1e7);color:#fff;padding:10px 20px;
+                   border:none;border-radius:12px;font-weight:600;cursor:pointer;
+                   box-shadow:0 5px 15px rgba(0,0,0,0.12);font-size:1rem;transition:0.3s;">
         ✅ Duyệt nhanh
     </button>
 </div>
 
-<!-- Bảng danh sách đơn -->
-<table style="width:100%; border-collapse:collapse; text-align:left; font-family:Segoe UI,sans-serif;">
-    <thead>
-        <tr style="background:#1e3c72; color:#fff;">
-            <th style="padding:10px; width:40px;"></th>
-            <th style="padding:10px;">Ảnh</th>
-            <th style="padding:10px;">Tiêu đề</th>
-            <th style="padding:10px;">Người tạo</th>
-            <th style="padding:10px;">Mã đơn</th>
-            <th style="padding:10px;">Bộ phận</th>
-            <th style="padding:10px;">Cổng</th>
-            <th style="padding:10px;">Thời gian tạo</th>
-            <th style="padding:10px;">Giờ vào dự kiến</th>
-            <th style="padding:10px;">Thời gian vào</th>
-            <th style="padding:10px;">Thời gian ra</th>
-            <th style="padding:10px;">Trạng thái</th>
-            <th style="padding:10px;">Người duyệt</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var don in Model)
-        {
-            <tr class="don-row" data-id="@don.IdDon" style="border-bottom:1px solid #ddd; cursor:pointer;">
-                <td style="padding:8px; text-align:center;">
-                    @if (don.TrangThai != "Đã duyệt")
+<!-- GRID 6 CỘT -->
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:16px;padding:10px;">
+    @foreach (var don in Model)
+    {
+        <div data-id="@don.IdDon"
+             style="background:#ffffff;border-radius:14px;padding:12px;border:1px solid #e6e6e6;
+                        box-shadow:0 4px 10px rgba(0,0,0,0.05);transition:0.3s;cursor:pointer;
+                        font-family:sans-serif;">
+
+            <!-- Checkbox -->
+            <div style="text-align:right;margin-bottom:6px;">
+                @if (don.TrangThai != "Đã duyệt")
+                {
+                    <input type="checkbox" class="chonDon" value="@don.IdDon"
+                           style="width:95%;height:18px;cursor:pointer;border-radius:4px;border:1px solid #ccc;" />
+                }
+            </div>
+
+            <!-- Ảnh -->
+            <div style="margin-bottom:0.5rem;text-align:center;">
+                @if (don.Anh != null && don.Anh.Length > 0)
+                {
+                    var base64 = Convert.ToBase64String(don.Anh);
+                    <img src="data:image/png;base64,@base64"
+                         style="width:100%;height:90px;object-fit:cover;border-radius:8px;border:1px solid #ddd;" />
+                }
+                else
+                {
+                    <div style="width:100%;height:90px;display:flex;align-items:center;justify-content:center;
+                                        border:1px solid #ddd;border-radius:8px;background:#fefefe;color:#888;font-size:12px;">
+                        Chưa có ảnh
+                    </div>
+                }
+            </div>
+
+            <!-- Nội dung nhỏ gọn -->
+            <div style="font-size:12px;line-height:1.3;color:#1a1a1a;">
+                <p style="margin:2px 0;"><b>Tiêu đề:</b> @don.TieuDe</p>
+                <p style="margin:2px 0;"><b>Người tạo:</b> @don.TenNguoiTao</p>
+                <p style="margin:2px 0;"><b>Mã đơn:</b> @don.MaDon</p>
+                <p style="margin:2px 0;"><b>Bộ phận:</b> @don.BoPhanDangKy</p>
+                <p style="margin:2px 0;"><b>Cổng:</b> @don.CongVao</p>
+                <p style="margin:2px 0;"><b>Ngày tạo:</b> @(don.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+                <p style="margin:2px 0;"><b>Giờ dự kiến:</b> @(don.GioVaoDuKien?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+                <p style="margin:2px 0;"><b>Thời gian ra:</b> @(don.ThoiGianRa?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+
+                <p style="margin:2px 0;">
+                    <b>Tài liệu đính kèm:</b>
+                    @if (!string.IsNullOrEmpty(don.DuongDan))
                     {
-                        <input type="checkbox" class="chonDon" value="@don.IdDon" style="width:18px; height:18px; cursor:pointer;">
-                    }
-                </td>
-                <td style="padding:8px; text-align:center;">
-                    @if (don.Anh != null && don.Anh.Length > 0)
-                    {
-                        var base64 = Convert.ToBase64String(don.Anh);
-                        <img src="data:image/png;base64,@base64"
-                             style="width:60px; height:60px; object-fit:cover; border-radius:5px; border:1px solid #ccc;" />
+                        <a href="@don.DuongDan" target="_blank"
+                           style="color:#4da8da;text-decoration:underline;">Xem</a>
                     }
                     else
                     {
-                        <span style="color:#6c757d;">Chưa có ảnh</span>
+                        <span style="color:#aaa;">Không có</span>
                     }
-                </td>
-                <td style="padding:8px;">@don.TieuDe</td>
-                <td style="padding:8px;">@don.TenNguoiTao</td>
-                <td style="padding:8px;">@don.MaDon</td>
-                <td style="padding:8px;">@don.CongVao</td>
-                <td style="padding:8px;">@don.BoPhanDangKy</td>
-                <td style="padding:8px;">@(don.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                <td style="padding:8px;">@(don.GioVaoDuKien?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                <td style="padding:8px;">@(don.ThoiGianVao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                <td style="padding:8px;">@(don.ThoiGianRa?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                <td style="padding:8px;">
-                    <span style="padding:0.3rem 0.6rem; border-radius:5px; font-weight:bold;
-                                     background-color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ffc107" : "#198754");
+                </p>
+
+                <p style="margin:2px 0;">
+                    <b>Trạng thái:</b>
+                    <span style="padding:3px 6px;border-radius:6px;font-weight:600;font-size:11px;
+                                     background:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ffe08c" : "#63c76a");
                                      color:@(don.TrangThai == "Đang chờ xét duyệt" ? "#212529" : "#fff");">
                         @don.TrangThai
                     </span>
-                </td>
-                <td style="padding:8px;">@(don.TenNguoiDuyet ?? "-")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </p>
+
+                <p style="margin:2px 0;"><b>Người duyệt:</b> @(don.TenNguoiDuyet ?? "-")</p>
+            </div>
+        </div>
+    }
+</div>
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const duyetBtn = document.getElementById("duyetNhanhBtn");
+        document.addEventListener("DOMContentLoaded", function () {
 
-            duyetBtn.addEventListener("click", function() {
+            // DUYỆT NHANH
+            document.getElementById("duyetNhanhBtn").addEventListener("click", function () {
                 const selected = Array.from(document.querySelectorAll(".chonDon:checked"))
-                                      .map(cb => parseInt(cb.value));
+                    .map(cb => parseInt(cb.value));
 
-                if(selected.length === 0){
+                if (selected.length === 0) {
                     alert("Vui lòng chọn ít nhất một đơn để duyệt!");
                     return;
                 }
 
-                // Xác nhận trước khi duyệt
-                if(!confirm(`Bạn có chắc chắn muốn duyệt ${selected.length} đơn này không?`)) return;
+                if (!confirm(`Bạn có chắc chắn muốn duyệt ${selected.length} đơn này không?`)) return;
 
                 fetch("/DonXetDuyet/AddTrangDuyet", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(selected)
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.success){
-                        alert(`Đã duyệt ${data.updated} đơn thành công!`);
-                        location.reload();
-                    } else {
-                        alert(data.message || "Duyệt nhanh thất bại!");
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Có lỗi xảy ra!");
-                });
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Đã duyệt ${data.updatedCount} đơn thành công!`);
+                            location.reload();
+                        } else {
+                            alert(data.message || "Duyệt nhanh thất bại!");
+                        }
+                    });
             });
 
-            // Click vào hàng để xem chi tiết trong tab mới
-            document.querySelectorAll(".don-row").forEach(row => {
-                row.addEventListener("click", function(e) {
-                    if(e.target.tagName.toLowerCase() === 'input') return; // bỏ qua checkbox
-                    const idDon = this.getAttribute("data-id");
-                    window.open(`/DonXetDuyet/CTTrangDuyet/${idDon}`, '_blank');
+            // MỞ CHI TIẾT
+            document.querySelectorAll("[data-id]").forEach(card => {
+                card.addEventListener("click", function (e) {
+                    if (e.target.tagName.toLowerCase() === "input") return;
+                    window.open(`/DonXetDuyet/CTTrangDuyet/${this.dataset.id}`, "_blank");
                 });
             });
         });
