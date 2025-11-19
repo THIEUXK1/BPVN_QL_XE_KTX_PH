@@ -129,6 +129,7 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                     TenNguoiDuyet = (_context.NguoiDungs.FirstOrDefault(c => c.IdNguoiDung == d.NguoiDuyet).HoTen),
                     CongVao = d.CongVao,
                     MaDon = d.MaDon,
+                    DuongDan = d.DuongDan,
                 })
                 .FirstOrDefault();
 

@@ -42,7 +42,10 @@
 				<!-- Tiêu đề -->
 				<div style="margin-bottom:20px;">
 					<label style="font-weight:600; color:#1e3c72; display:block; margin-bottom:5px;">Tiêu đề</label>
-					<input id="TieuDeInput" name="TieuDe" type="text" placeholder="Nhập tiêu đề đơn..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
+					<input id="TieuDeInput" name="TieuDe" type="text"
+						   placeholder="Nhập tiêu đề đơn..."
+						   readonly
+						   style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
 				</div>
 
 				<!-- Bộ phận đăng ký -->
@@ -244,7 +247,7 @@
 				form.style.display = selectLoaiDon.value ? "block" : "none";
 				if(!tieuDe.value || tieuDe.value.startsWith("Đơn ")) {
 					const tenLoai = selectLoaiDon.options[selectLoaiDon.selectedIndex].getAttribute('data-ten');
-					tieuDe.value = "Đơn " + tenLoai;
+					tieuDe.value = "" + tenLoai;
 				}
 				saveFormState();
 			});
