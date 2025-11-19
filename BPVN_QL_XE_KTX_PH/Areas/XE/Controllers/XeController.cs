@@ -122,7 +122,6 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                     Anh = d.Anh,
                     NgayTao = d.NgayTao,
                     GioVaoDuKien = d.GioVaoDuKien,
-                    ThoiGianVao = d.ThoiGianVao,
                     ThoiGianRa = d.ThoiGianRa,
                     TrangThai = string.IsNullOrEmpty(d.TrangThai) ? "Đang chờ xét duyệt" : d.TrangThai,
                     MucDich = d.MucDich,
@@ -149,7 +148,6 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
             public byte[]? Anh { get; set; }
             public DateTime? NgayTao { get; set; }
             public DateTime? GioVaoDuKien { get; set; }
-            public DateTime? ThoiGianVao { get; set; }
             public DateTime? ThoiGianRa { get; set; }
             public string TrangThai { get; set; } = "Đang chờ xét duyệt";
             public string? TenNguoiDuyet { get; set; }
@@ -258,7 +256,6 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                     Anh = d.Anh,
                     NgayTao = d.NgayTao,
                     GioVaoDuKien = d.GioVaoDuKien,
-                    ThoiGianVao = d.ThoiGianVao,
                     ThoiGianRa = d.ThoiGianRa,
                     TrangThai = string.IsNullOrEmpty(d.TrangThai) ? "Đang chờ xét duyệt" : d.TrangThai,
                     TenNguoiDuyet = (_context.NguoiDungs.FirstOrDefault(c => c.IdNguoiDung == d.NguoiDuyet).HoTen),
@@ -347,7 +344,6 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                     Anh = d.Anh,
                     NgayTao = d.NgayTao,
                     GioVaoDuKien = d.GioVaoDuKien,
-                    ThoiGianVao = d.ThoiGianVao,
                     ThoiGianRa = d.ThoiGianRa,
                     TrangThai = string.IsNullOrEmpty(d.TrangThai) ? "Đang chờ xét duyệt" : d.TrangThai,
                     TenNguoiDuyet = (_context.NguoiDungs.FirstOrDefault(c => c.IdNguoiDung == d.NguoiDuyet).HoTen),
@@ -456,7 +452,6 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
                 Anh = donEntity.Anh,
                 NgayTao = donEntity.NgayTao,
                 GioVaoDuKien = donEntity.GioVaoDuKien,
-                ThoiGianVao = donEntity.ThoiGianVao,
                 ThoiGianRa = donEntity.ThoiGianRa,
                 TrangThai = string.IsNullOrEmpty(donEntity.TrangThai) ? "Đang chờ xét duyệt" : donEntity.TrangThai,
                 TenNguoiDuyet = tenNguoiDuyet,
