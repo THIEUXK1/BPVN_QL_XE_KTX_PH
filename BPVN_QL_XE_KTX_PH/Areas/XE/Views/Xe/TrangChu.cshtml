@@ -84,7 +84,16 @@
                          data-nguoiduyet="@don.TenNguoiDuyet"
                          data-madon="@don.MaDon"
                          data-trangthai="@don.TrangThai"
-                         style="flex:0 0 calc((100% - 5*1.5rem)/6);display:flex;flex-direction:column;background:#ffffff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.1);cursor:pointer;overflow:visible;position:relative;transition:transform 0.3s,box-shadow 0.3s;">
+                         style="flex:0 0 calc((100% - 4*1.5rem)/5);  /* 5 cột, 4 gaps 1.5rem */
+                    display:flex;
+                    flex-direction:column;
+                    background:#ffffff;
+                    border-radius:12px;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.1);
+                    cursor:pointer;
+                    overflow:visible;
+                    position:relative;
+                    transition:transform 0.3s,box-shadow 0.3s;">
 
                         <div style="position:absolute;top:-10px;left:-10px;
                     background:@(don.TrangThai == "Đang chờ xét duyệt" ? "#ff6b6b" : "#20c997");

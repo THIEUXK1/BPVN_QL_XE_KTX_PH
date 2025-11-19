@@ -2,6 +2,8 @@
 using BPVN_QL_XE_KTX_PH.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
 {
@@ -13,6 +15,216 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
         {
             _context = new DBXeContext();
         }
+        #region QL tài khoản
+        [HttpGet("/CheckTK")]
+        public IActionResult CheckTK()
+        {
+            return View();
+        }
+
+        [HttpPost("/CheckTK")]
+        [ValidateAntiForgeryToken]
+        public IActionResult CheckTK(string email, string matkhau)
+        {
+            // Kiểm tra tài khoản cố định với .\administrator
+            if (email == @".\administrator" && matkhau == "bpvn-2017")
+            {
+                // Lưu thông tin vào session
+                HttpContext.Session.SetString("SS_Email", email);
+                HttpContext.Session.SetString("SS_HoTen", "Administrator");
+                HttpContext.Session.SetString("SS_VaiTro", "QuanLy");
+
+                return Redirect("/QLtaiKhoan");
+            }
+
+            // Nếu không đúng, hiển thị lỗi
+            ViewBag.Error = "Sai tài khoản hoặc mật khẩu";
+            return View();
+        }
+
+        // Logout
+        [HttpGet("/Logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Redirect("/CheckTK");
+        }
+        // Kiểm tra đã đăng nhập hay chưa
+        private bool IsLoggedIn()
+        {
+            return !string.IsNullOrEmpty(HttpContext.Session.GetString("SS_Email"));
+        }
+
+        // Hiển thị danh sách người dùng
+        [HttpGet("/QLtaiKhoan")]
+        public IActionResult QLtaiKhoan()
+        {
+            if (!IsLoggedIn())
+                return Redirect("/CheckTK");
+
+            var nguoiDungs = _context.NguoiDungs.ToList();
+            return View(nguoiDungs);
+        }
+
+        // Thêm nhân viên theo EMPNO từ API
+        [HttpPost("/QLtaiKhoan/ThemNhanVien")]
+        [ValidateAntiForgeryToken] // nếu muốn bảo vệ CSRF
+        public async Task<IActionResult> ThemNhanVien(string empNo)
+        {
+            if (!IsLoggedIn())
+                return Redirect("/CheckTK");
+
+            if (string.IsNullOrEmpty(empNo))
+                return BadRequest("Chưa nhập mã nhân viên");
+
+            using var client = new HttpClient();
+            string url = $"https://bptehr.bestpacific.com/ehr/open/rmt/getBpvn?ym=2025-05";
+
+            string response;
+            try
+            {
+                response = await client.GetStringAsync(url);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Không thể gọi API: {ex.Message}");
+            }
+
+            var result = JsonSerializer.Deserialize<QLtaiKhoanResponse>(response, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (result == null || result.CODE != 0)
+                return BadRequest("API trả về lỗi");
+
+            var emp = result.rows.employees.FirstOrDefault(e => e.EMPNO == empNo);
+            if (emp == null)
+                return NotFound("Không tìm thấy nhân viên");
+
+            var existing = _context.NguoiDungs.FirstOrDefault(u => u.Email == emp.EMPNO);
+            if (existing != null)
+                return BadRequest("Nhân viên đã tồn tại");
+
+            var nguoiDung = new NguoiDung
+            {
+                HoTen = emp.USER_NAME,
+                Email = emp.EMPNO,
+                PhongBan = emp.DEPT_NAME,
+                VaiTro = "",
+                TrangThai = emp.STATUS == 1 ? "Đang làm" : emp.STATUS == 2 ? "Chờ nghỉ" : "Đã nghỉ",
+                NgayTao = DateTime.Now
+            };
+
+            _context.NguoiDungs.Add(nguoiDung);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("QLtaiKhoan");
+        }
+        [HttpPost("/QLtaiKhoan/CapNhatNguoiDung")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CapNhatNguoiDung(int IdNguoiDung, string MatKhau, string VaiTro, string SoDienThoai)
+        {
+            if (!IsLoggedIn())
+                return Redirect("/CheckTK");
+
+            var user = _context.NguoiDungs.FirstOrDefault(u => u.IdNguoiDung == IdNguoiDung);
+            if (user == null)
+                return NotFound("Không tìm thấy người dùng");
+
+            // Cập nhật các thông tin
+            user.MatKhau = MatKhau;
+            user.VaiTro = VaiTro;
+            user.SoDienThoai = SoDienThoai;
+            user.NgayCapNhat = DateTime.Now;
+
+            _context.NguoiDungs.Update(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("QLtaiKhoan");
+        }
+
+        [HttpGet("/QLtaiKhoan/GetNhanVien")]
+        public async Task<IActionResult> GetNhanVien(string empNo)
+        {
+            if (!IsLoggedIn())
+                return Redirect("/CheckTK");
+
+            if (string.IsNullOrEmpty(empNo))
+                return Json(null);
+
+            using var client = new HttpClient();
+            string url = $"https://bptehr.bestpacific.com/ehr/open/rmt/getBpvn?ym=2025-05";
+            var response = await client.GetStringAsync(url);
+
+            var result = JsonSerializer.Deserialize<QLtaiKhoanResponse>(response, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (result == null || result.CODE != 0)
+                return Json(null);
+
+            var emp = result.rows.employees.FirstOrDefault(e => e.EMPNO == empNo || e.USER_NAME.Contains(empNo));
+
+            return Json(emp); // trả về JSON cho JS xử lý
+        }
+
+        #endregion
+
+        #region Lớp dùng deserialize API
+
+        // Response gốc từ API
+        private class QLtaiKhoanResponse
+        {
+            [JsonPropertyName("CODE")]
+            public int CODE { get; set; }
+
+            [JsonPropertyName("rows")]
+            public Rows rows { get; set; }
+        }
+
+        private class Rows
+        {
+            [JsonPropertyName("employees")]
+            public List<Employee> employees { get; set; }
+        }
+
+        private class Employee
+        {
+            [JsonPropertyName("ENAME")]
+            public string ENAME { get; set; }
+
+            [JsonPropertyName("STATUS")]
+            public int STATUS { get; set; }
+
+            [JsonPropertyName("DEPT_NAME")]
+            public string DEPT_NAME { get; set; }
+
+            [JsonPropertyName("DEPT_CODE")]
+            public string DEPT_CODE { get; set; }
+
+            [JsonPropertyName("POSITION_CODE")]
+            public string POSITION_CODE { get; set; }
+
+            [JsonPropertyName("EMPNO")]
+            public string EMPNO { get; set; }
+
+            [JsonPropertyName("USER_NAME")]
+            public string USER_NAME { get; set; }
+
+            [JsonPropertyName("ENTRY_DATE")]
+            public string ENTRY_DATE { get; set; }
+
+            [JsonPropertyName("POSITION_NAME")]
+            public string POSITION_NAME { get; set; }
+
+            [JsonPropertyName("PRO_LEAVE_DATE")]
+            public string PRO_LEAVE_DATE { get; set; }
+        }
+
+        #endregion
+
         #region Trang đăng nhập
         [HttpGet("/DonXetDuyet/DangNhap")]
         public IActionResult DangNhap()
@@ -71,6 +283,7 @@ namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
             HttpContext.Session.Clear();
             return Redirect("/DonXetDuyet/TrangChu");
         }
+
         #endregion
 
         #region Trang xem

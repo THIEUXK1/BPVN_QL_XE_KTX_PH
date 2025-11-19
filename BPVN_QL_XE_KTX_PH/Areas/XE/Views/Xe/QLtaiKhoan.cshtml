@@ -1,0 +1,124 @@
+﻿@model IEnumerable<BPVN_QL_XE_KTX_PH.Areas.XE.Models.NguoiDung>
+
+@{
+    ViewData["Title"] = "QLtaiKhoan";
+    Layout = "~/Areas/XE/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Quản lý Tài Khoản</h1>
+
+<!-- Form tìm nhân viên -->
+<div class="mb-3" style="width:100%;">
+    <div class="form-inline" style="width:100%;">
+        <label for="empNoSearch" class="mr-2" style="width:100%;">Tìm nhân viên:</label>
+        <input type="text" id="empNoSearch" placeholder="EMPNO hoặc USER_NAME" style="width:95%; margin-right:8px; padding:6px; border-radius:4px; border:1px solid #ccc;" />
+        <button id="btnSearch" style="padding:6px 12px; border-radius:4px; background-color:#17a2b8; color:#fff; border:none;">Tìm</button>
+    </div>
+</div>
+
+<!-- Div hiển thị kết quả tìm kiếm -->
+<div id="searchResult" style="width:100%; margin-bottom:15px;"></div>
+
+<!-- Form thêm nhân viên vào DB -->
+<div class="mb-3 mt-3" style="width:100%;">
+    <form action="/QLtaiKhoan/ThemNhanVien" method="post" style="width:100%;">
+        @Html.AntiForgeryToken()
+        <div style="width:100%; margin-bottom:8px;">
+            <label for="empNo" style="display:block; margin-bottom:4px;">Nhập Mã Nhân Viên:</label>
+            <input type="text" id="empNo" name="empNo" placeholder="EMPNO" required style="width:95%; padding:6px; border-radius:4px; border:1px solid #ccc;" />
+        </div>
+        <button type="submit" style="padding:6px 12px; border-radius:4px; background-color:#007bff; color:#fff; border:none;">Thêm Nhân Viên</button>
+    </form>
+</div>
+
+<!-- Bảng danh sách người dùng -->
+<table style="width:100%; border-collapse:collapse; margin-top:15px; border:1px solid #dee2e6;">
+    <thead style="background-color:#343a40; color:#fff;">
+        <tr>
+            <th style="padding:8px; border:1px solid #dee2e6;">ID</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Họ Tên</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Email</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Mật Khẩu</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Số Điện Thoại</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Phòng Ban</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Vai Trò</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Trạng Thái</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Ngày Tạo</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Ngày Cập Nhật</th>
+            <th style="padding:8px; border:1px solid #dee2e6;">Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <form action="/QLtaiKhoan/CapNhatNguoiDung" method="post" style="width:100%;">
+                    @Html.AntiForgeryToken()
+                <td style="padding:6px; border:1px solid #dee2e6;">
+                    @user.IdNguoiDung
+                    <input type="hidden" name="IdNguoiDung" value="@user.IdNguoiDung" />
+                </td>
+                <td style="padding:6px; border:1px solid #dee2e6;">@user.HoTen</td>
+                <td style="padding:6px; border:1px solid #dee2e6;">@user.Email</td>
+                <td style="padding:6px; border:1px solid #dee2e6;">
+                    <input type="text" name="MatKhau" value="@user.MatKhau" style="width:95%; padding:4px; border-radius:4px; border:1px solid #ccc;" />
+                </td>
+                <td style="padding:6px; border:1px solid #dee2e6;">
+                    <input type="text" name="SoDienThoai" value="@user.SoDienThoai" style="width:95%; padding:4px; border-radius:4px; border:1px solid #ccc;" />
+                </td>
+                <td style="padding:6px; border:1px solid #dee2e6;">@user.PhongBan</td>
+                <td style="padding:6px; border:1px solid #dee2e6;">
+                    <select name="VaiTro" style="width:95%; padding:4px; border-radius:4px; border:1px solid #ccc;">
+                        <option value="" @(string.IsNullOrEmpty(user.VaiTro) ? "selected" : "")></option>
+                        <option value="QuanLy" @(user.VaiTro == "QuanLy" ? "selected" : "")>QuanLy</option>
+                        <option value="NhanVien" @(user.VaiTro == "NhanVien" ? "selected" : "")>NhanVien</option>
+                    </select>
+                </td>
+                <td style="padding:6px; border:1px solid #dee2e6;">@user.TrangThai</td>
+                <td style="padding:6px; border:1px solid #dee2e6;">@user.NgayTao?.ToString("dd/MM/yyyy")</td>
+                <td style="padding:6px; border:1px solid #dee2e6;">@user.NgayCapNhat?.ToString("dd/MM/yyyy")</td>
+                <td style="padding:6px; border:1px solid #dee2e6;">
+                    <button type="submit" style="padding:4px 8px; border-radius:4px; background-color:#28a745; color:#fff; border:none;">Lưu</button>
+                </td>
+                </form>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- JS tìm kiếm nhân viên -->
+<script>
+    document.getElementById('btnSearch').addEventListener('click', function(e){
+        e.preventDefault();
+
+        var empNo = document.getElementById('empNoSearch').value.trim();
+        if(!empNo) return;
+
+        fetch('/QLtaiKhoan/GetNhanVien?empNo=' + encodeURIComponent(empNo))
+        .then(res => res.json())
+        .then(emp => {
+            var container = document.getElementById('searchResult');
+            if(!emp){
+                container.innerHTML = '<div style="padding:6px; border-radius:4px; background-color:#ffc107; color:#212529;">Không tìm thấy nhân viên</div>';
+                return;
+            }
+
+            var html = '<div style="padding:6px; border-radius:4px; background-color:#d4edda; color:#155724;">';
+            html += '<h5>Thông tin nhân viên tìm thấy:</h5><ul>';
+            html += '<li>EMPNO: ' + emp.EMPNO + '</li>';
+            html += '<li>Họ Tên: ' + emp.USER_NAME + '</li>';
+            html += '<li>Phòng Ban: ' + emp.DEPT_NAME + '</li>';
+            html += '<li>Vị Trí: ' + emp.POSITION_NAME + '</li>';
+            html += '<li>Trạng Thái: ' + (emp.STATUS == 1 ? 'Đang làm' : emp.STATUS == 2 ? 'Chờ nghỉ' : 'Đã nghỉ') + '</li>';
+            html += '<li>Ngày Vào Công Ty: ' + emp.ENTRY_DATE + '</li>';
+            html += '<li>Ngày Nghỉ Dự Kiến: ' + emp.PRO_LEAVE_DATE + '</li>';
+            html += '</ul></div>';
+
+            container.innerHTML = html;
+        })
+        .catch(err => {
+            document.getElementById('searchResult').innerHTML = '<div style="padding:6px; border-radius:4px; background-color:#f8d7da; color:#721c24;">Lỗi khi gọi API</div>';
+            console.error(err);
+        });
+    });
+</script>
