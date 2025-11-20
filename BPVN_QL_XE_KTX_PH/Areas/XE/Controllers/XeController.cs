@@ -1,9 +1,10 @@
-﻿using BPVN_QL_XE_KTX_PH.Areas.XE.Models;
+﻿using BPVN_QL_XE_KTX_PH.Models;
 using BPVN_QL_XE_KTX_PH.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BPVN_QL_XE_KTX_PH.Models.Xe;
 
 namespace BPVN_QL_XE_KTX_PH.Areas.XE.Controllers
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BPVN_QL_XE_KTX_PH.Areas.XE.Models;
+using BPVN_QL_XE_KTX_PH.Models.Xe;
 using Microsoft.EntityFrameworkCore;
 
 namespace BPVN_QL_XE_KTX_PH.Context;

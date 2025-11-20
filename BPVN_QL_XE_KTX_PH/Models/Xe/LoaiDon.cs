@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace BPVN_QL_XE_KTX_PH.Areas.XE.Models;
+namespace BPVN_QL_XE_KTX_PH.Models.Xe;
 
 [Table("LoaiDon")]
 public partial class LoaiDon

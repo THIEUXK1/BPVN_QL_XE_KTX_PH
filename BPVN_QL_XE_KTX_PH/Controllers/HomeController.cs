@@ -12,11 +12,11 @@ namespace BPVN_QL_XE_KTX_PH.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
-            return View();
+            return Redirect("/DonXetDuyet/TrangChu");
         }
+
 
         public IActionResult Privacy()
         {

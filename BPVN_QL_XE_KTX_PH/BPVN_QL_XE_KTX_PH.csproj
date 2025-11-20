@@ -30,7 +30,6 @@
 		<PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.9" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Areas\XE\Models\" />
 	  <Folder Include="wwwroot\LuuDonXe\" />
 	</ItemGroup>
 </Project>
